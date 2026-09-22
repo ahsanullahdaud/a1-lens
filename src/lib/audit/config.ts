@@ -19,7 +19,7 @@ export const MAINS_POWERED =
 
 /** …unless the name is clearly an accessory *for* one of those. */
 export const ACCESSORY =
-  /\b(case|cover|cable|controller|headset|stand|mount|bag|sleeve|protector|skin|strap|filter|replacement|for (the )?(ps5|playstation|xbox|nintendo|switch|iphone|ipad|macbook|samsung|dyson))\b/i;
+  /\b(case|cover|cable|controller|headset|stand|mount|bag|sleeve|protector|skin|strap|filter|replacement|memory|keyboard|mouse|ssd|transceiver|for (the )?(ps5|playstation|xbox|nintendo|switch|iphone|ipad|macbook|samsung|dyson))\b/i;
 
 /** Any of these in the name, description or specs counts as "plug type is stated". */
 export const PLUG_STATED =

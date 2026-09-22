@@ -40,14 +40,25 @@ const GRADE_RANK: Record<string, number> = { new: 0, "open-box": 1, "grade-a": 2
 
 export function conditionFromLabel(label?: string): Condition {
   const l = label?.toLowerCase() ?? "";
-  if (l.includes("refurb")) return "refurbished";
+  if (l.includes("refurb") || l.includes("open box")) return "refurbished";
   if (l.includes("used") || l.includes("pre-owned")) return "used";
   if (l.includes("new")) return "new";
   return "unknown";
 }
 
-const isRefurbished = (p: ParsedProduct) =>
-  p.jsonLd?.offer?.condition === "refurbished" || conditionFromLabel(p.conditionLabel) === "refurbished";
+/** What the page actually opens on. JSON-LD is only a fallback: it may describe another condition tab. */
+const visibleCondition = (p: ParsedProduct): Condition => {
+  const visible = conditionFromLabel(p.conditionLabel);
+  return visible === "unknown" ? (p.jsonLd?.offer?.condition ?? "unknown") : visible;
+};
+
+const isRefurbished = (p: ParsedProduct) => visibleCondition(p) === "refurbished";
+
+/** True when the JSON-LD offer's price belongs to a condition tab other than the one the page opens on. */
+const describesAnotherVariant = (p: ParsedProduct) => {
+  const ld = p.jsonLd?.offer?.price;
+  return ld != null && p.conditionVariants.some((v) => !v.selected && v.price != null && samePrice(v.price, ld));
+};
 
 /** Grade word promised by the slug, e.g. "…-very-good-condition" -> "very-good". */
 export function slugConditionWord(slug: string): string | undefined {
@@ -122,6 +133,10 @@ export const RULES: Rule[] = [
       const ld = p.jsonLd?.offer?.condition ?? "unknown";
       const visible = conditionFromLabel(p.conditionLabel);
       if (ld === "unknown" || visible === "unknown" || ld === visible) return null;
+      // Open Box has no schema.org condition of its own; either value is defensible.
+      if (/open box/i.test(p.conditionLabel ?? "")) return null;
+      // JSON-LD describing another tab is jsonld-price-is-other-variant's job, not a mislabel.
+      if (describesAnotherVariant(p)) return null;
       return { message: `JSON-LD says "${ld}", page shows "${p.conditionLabel}".` };
     },
   },

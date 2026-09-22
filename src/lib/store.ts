@@ -18,7 +18,8 @@ export async function saveCrawledProduct(parsed: ParsedProduct, httpStatus: numb
     name: ld?.name ?? parsed.h1 ?? null,
     brand: ld?.brand ?? null,
     categoryPath: parsed.breadcrumbs.join(" > ") || null,
-    condition: ld?.offer?.condition && ld.offer.condition !== "unknown" ? ld.offer.condition : labelCondition,
+    // The label is what the page opens on; JSON-LD may describe another condition tab.
+    condition: labelCondition !== "unknown" ? labelCondition : (ld?.offer?.condition ?? "unknown"),
     conditionLabel: parsed.conditionLabel ?? null,
     // The buy-box price belongs to `conditionLabel`; JSON-LD may describe another variant.
     price: parsed.visiblePrice ?? ld?.offer?.price ?? null,

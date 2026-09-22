@@ -55,6 +55,31 @@ describe("auditProduct", () => {
       expect(inversion?.message).toBe("Refurbished – Good is £315.49 but Refurbished – Excellent is only £295.99.");
     });
 
+    it("does not call a Brand New page mislabelled when JSON-LD merely describes the cheapest tab", () => {
+      // Real pattern: 21 listings open on Brand New while the Offer carries the Grade C price and RefurbishedCondition.
+      const ids = ruleIds({
+        jsonLd: withOffer({ price: "284.99", itemCondition: "https://schema.org/RefurbishedCondition" }),
+        visiblePrice: "£567.44",
+        conditionChip: "Brand New",
+        conditionTabs: [["new", "Brand New£567.44", true], ["grade-a", "Refurbished – Excellent£295.99", false], ["grade-c", "Refurbished – Fair£284.99", false]],
+      });
+      expect(ids).toContain("jsonld-price-is-other-variant");
+      expect(ids).not.toContain("condition-mismatch");
+      expect(ids).not.toContain("refurb-condition-unexplained");
+      expect(ids).not.toContain("refurb-accessories-unstated");
+    });
+
+    it("treats Open Box like a refurbished grade for the accessories rule, never as a condition mismatch", () => {
+      const ids = ruleIds({
+        jsonLd: withOffer({ itemCondition: "https://schema.org/NewCondition" }),
+        conditionChip: "Open Box",
+        conditionNotes: "Box opened, contents unused.",
+        specs: [["Brand", "Acme"], ["Channels", "3.1"], ["Power", "300 W"], ["HDMI", "eARC"], ["Plug Type", "UK 3-pin plug"]],
+      });
+      expect(ids).toContain("refurb-accessories-unstated");
+      expect(ids).not.toContain("condition-mismatch");
+    });
+
     it("ignores out-of-stock variants when comparing grades", () => {
       const conditionTabs: [string, string, boolean][] = [["grade-a", "Refurbished – Excellent£295.99", true], ["grade-b", "Refurbished – Good£315.49Out of stock", false]];
       expect(ruleIds({ ...refurb, jsonLd: withOffer({ price: "295.99", itemCondition: "https://schema.org/RefurbishedCondition" }), conditionTabs })).not.toContain("grade-price-inversion");
@@ -88,6 +113,13 @@ describe("auditProduct", () => {
     // The fixture's review section mentions a "European plug"; that must not count.
     expect(ruleIds({ specs })).toContain("plug-type-unstated");
     expect(ruleIds()).not.toContain("plug-type-unstated");
+  });
+
+  it("does not ask a memory module or keyboard for a plug type", () => {
+    for (const name of ["Crucial CT16G4SFRA32AT Laptop Memory Module 16 GB", "HP Desktop 320K - keyboard - Belgium"]) {
+      const ids = ruleIds({ jsonLd: { ...baseJsonLd, name }, specs: [["Brand", "Acme"], ["EAN", "4006381333931"]] });
+      expect(ids).not.toContain("plug-type-unstated");
+    }
   });
 
   it("flags thin content", () => {
