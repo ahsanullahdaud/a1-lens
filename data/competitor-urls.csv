@@ -1,0 +1,7 @@
+# Hand-matched competitor pages for A1 products (Phase 2).
+# a1_product can be the A1 product URL, its SKU (A1T-...) or its GTIN/EAN.
+# Make sure it is the SAME product: same model, storage, colour and condition.
+#
+# a1_product,retailer,url
+A1T-GCVECHNFSU,Smart Home Sounds,https://www.smarthomesounds.co.uk/jbl-flip-7
+A1T-GCVECHNFSU,Wonderprice,https://www.wonderprice.co.uk/jbl-flip-7-portable-bluetooth-speaker-white
