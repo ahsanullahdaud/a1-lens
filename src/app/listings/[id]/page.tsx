@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Card, gbp, ScoreMeter, SeverityBadge } from "@/components/ui";
 import { RULES_BY_ID, type Severity } from "@/lib/audit/rules";
+import { SEGMENT_BY_ID, type Segment } from "@/lib/audit/segment";
 import { getListing } from "@/lib/queries";
 
 const SEVERITY_ORDER: Record<string, number> = { high: 0, medium: 1, low: 2 };
@@ -23,6 +24,7 @@ export default async function ListingPage({ params }: { params: Promise<{ id: st
     ["SKU", product.sku ?? "—"],
     ["GTIN", product.gtin ?? "—"],
     ["Category", product.categoryPath ?? "—"],
+    ["Segment", (product.segment && SEGMENT_BY_ID.get(product.segment as Segment)?.label) ?? "—"],
     ["Images", String(snapshot?.galleryImageCount ?? "—")],
     ["Spec rows", String(snapshot?.specs?.length ?? "—")],
     ["Description", snapshot?.description ? `${snapshot.description.length} characters` : "—"],

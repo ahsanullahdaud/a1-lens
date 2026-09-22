@@ -62,11 +62,23 @@ PriceSource(s) ──► competitor_prices ────────────�
 | `src/lib/crawler/` | `robots.ts` parser, `http.ts` rate-limited fetcher, `sitemap.ts`, `parse-product.ts` |
 | `src/lib/jsonld.ts` | schema.org Product/Offer extraction — shared by the A1 parser and competitor pages |
 | `src/lib/audit/rules.ts` | **The rules.** Start here. `config.ts` holds thresholds and heuristics |
+| `src/lib/audit/segment.ts` | Segment classifier: groups listings that share an import signature (thin feed, no copy) |
 | `src/lib/pricing/` | `PriceSource` interface + `url-source.ts` (mapped URLs) + `ebay-source.ts` (Browse API) |
 | `src/lib/queries.ts` | Every read the dashboard makes |
 | `src/db/schema.ts` | Tables: products, audit_findings, price_history, competitor_listings, competitor_prices, crawl_runs |
 | `scripts/` | CLI entry points run with `tsx` |
 | `tests/` | Vitest, against a synthetic fixture that mirrors the real page structure |
+
+### Dashboard pages
+
+| Page | Shows |
+|---|---|
+| `/` Overview | Stat tiles, catalogue segments, findings by rule, score distribution — filterable by segment |
+| `/categories` Scorecard | Score, import-thin share and top issues per category; click through to sub-categories |
+| `/feed-quality` | The thin distributor-feed import as one problem: size, symptoms, where it sits, how to fix it |
+| `/listings` | Every audited listing, filterable by rule, severity, segment and category |
+| `/listings/[id]` | One listing: findings with fixes, facts, condition variants, competitor prices, price history |
+| `/prices` Price lens | A1's price vs the cheapest competitor found per product |
 
 ### Adding a rule
 

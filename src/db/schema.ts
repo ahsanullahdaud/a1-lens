@@ -43,6 +43,7 @@ export const products = pgTable(
     snapshot: jsonb("snapshot").$type<ParsedProduct>(),
     auditScore: integer("audit_score"),
     auditedAt: timestamp("audited_at", { withTimezone: true }),
+    segment: text("segment"), // thin-feed | no-copy | standard — see lib/audit/segment.ts
     sitemapLastmod: timestamp("sitemap_lastmod", { withTimezone: true }),
     firstSeenAt: timestamp("first_seen_at", { withTimezone: true }).notNull().defaultNow(),
     lastCrawledAt: timestamp("last_crawled_at", { withTimezone: true }),
@@ -51,6 +52,7 @@ export const products = pgTable(
     uniqueIndex("products_url_idx").on(t.url),
     index("products_gtin_idx").on(t.gtin),
     index("products_score_idx").on(t.auditScore),
+    index("products_segment_idx").on(t.segment),
   ],
 );
 

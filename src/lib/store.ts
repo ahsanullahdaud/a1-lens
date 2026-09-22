@@ -1,6 +1,7 @@
 import { desc, eq } from "drizzle-orm";
 import { db, schema } from "../db";
 import { auditProduct } from "./audit";
+import { classifySegment } from "./audit/segment";
 import type { ParsedProduct } from "./crawler/parse-product";
 import { conditionFromLabel } from "./audit/rules";
 
@@ -56,12 +57,13 @@ export async function saveCrawledProduct(parsed: ParsedProduct, httpStatus: numb
 /** Re-run the rules for one product and replace its stored findings. */
 export async function saveAudit(productId: number, parsed: ParsedProduct) {
   const { score, findings } = auditProduct(parsed);
+  const segment = classifySegment(parsed);
   await db.transaction(async (tx) => {
     await tx.delete(auditFindings).where(eq(auditFindings.productId, productId));
     if (findings.length) {
       await tx.insert(auditFindings).values(findings.map((f) => ({ productId, ...f, evidence: f.evidence ?? null })));
     }
-    await tx.update(products).set({ auditScore: score, auditedAt: new Date() }).where(eq(products.id, productId));
+    await tx.update(products).set({ auditScore: score, auditedAt: new Date(), segment }).where(eq(products.id, productId));
   });
-  return { score, findings };
+  return { score, findings, segment };
 }

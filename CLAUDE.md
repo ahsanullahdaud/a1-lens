@@ -5,7 +5,7 @@
 Listing-quality auditor + competitor price lens for the public a1techdeals.com catalogue. See README.md.
 
 - Gates before calling work done: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`.
-- Changed a **rule** (`src/lib/audit/`)? `npm run audit` re-scores stored snapshots, no network.
+- Changed a **rule or the segment classifier** (`src/lib/audit/`)? `npm run audit` re-scores and re-segments stored snapshots, no network.
   Changed the **parser** (`src/lib/crawler/parse-product.ts`)? `npm run crawl -- --known` re-fetches stored pages.
 - Changed `src/db/schema.ts`? `npm run db:generate` then `npm run db:migrate`. Never hand-edit `drizzle/`.
 - Pages are server components; DB reads live in `src/lib/queries.ts` and start with `await connection()`
