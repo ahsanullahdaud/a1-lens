@@ -29,5 +29,11 @@ export const PLUG_STATED =
 export const BOX_CONTENTS_STATED =
   /\b(in the box|box contents?|what'?s (included|in the box)|package contents?|included accessories|accessories included|comes with|supplied with|includes?:)/i;
 
+/** A name ending like this was cut off mid-phrase or left with dangling punctuation. ("x" and "a" are left out: "Xbox Series X".) */
+export const NAME_DANGLING_END = /([,&–—-]|\b(that|with|and|for|of|the|to|in|from|or|by))$/i;
+
+/** A space before a comma, or an opening bracket that never closes, is feed damage rather than a style choice. */
+export const NAME_MALFORMED = /\s,|\([^)]*$/;
+
 /** Grade words that may appear in a URL slug, most specific first. */
 export const CONDITION_WORDS = ["pristine", "excellent", "very-good", "good", "fair", "grade-a", "grade-b", "grade-c"];

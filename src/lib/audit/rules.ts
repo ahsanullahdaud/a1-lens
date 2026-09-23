@@ -5,6 +5,8 @@ import {
   BOX_CONTENTS_STATED,
   CONDITION_WORDS,
   MAINS_POWERED,
+  NAME_DANGLING_END,
+  NAME_MALFORMED,
   PLUG_STATED,
   THRESHOLDS,
 } from "./config";
@@ -293,6 +295,22 @@ export const RULES: Rule[] = [
     },
   },
 
+  {
+    id: "name-truncated",
+    title: "Product name looks cut off or malformed",
+    severity: "medium",
+    category: "content",
+    why: "The name is the headline in search results, product cards and the basket. “USB-C Power Adapter PD 65W -” or “QSFP28 transceiver that” reads as broken and hides what the product is.",
+    fix: "The importer is truncating a longer feed field or keeping stray punctuation. Fix the mapping, re-import, and hand-edit the leftovers.",
+    check(p) {
+      const n = name(p);
+      const dangling = n.match(NAME_DANGLING_END)?.[0];
+      if (dangling) return { message: `Name ends with “${dangling}”.`, evidence: n };
+      if (NAME_MALFORMED.test(n)) return { message: "Name has a space before a comma or an unclosed bracket.", evidence: n };
+      return null;
+    },
+  },
+
   // ── structured data: what machines read ──────────────────────────────────
   {
     id: "jsonld-missing",
@@ -441,6 +459,23 @@ export const RULES: Rule[] = [
     check(p) {
       const length = p.titleTag?.length ?? 0;
       return length > THRESHOLDS.titleTagMaxChars ? { message: `Title tag is ${length} characters.`, evidence: p.titleTag } : null;
+    },
+  },
+  {
+    id: "slug-dedupe-suffix",
+    title: "URL ends in a duplicate-slug counter",
+    severity: "low",
+    category: "seo",
+    why: "“…-printer-bw-2” is what an importer produces when a slug is already taken: it appends a counter. That usually means the product was imported twice (a duplicate to merge) or the slug came from a truncated name. Either way the URL looks machine-made in search results and shared links.",
+    fix: "Build slugs from brand + full name + a distinguishing attribute (colour, capacity), and de-duplicate products before import rather than URLs after.",
+    check(p) {
+      const suffix = p.slug.match(/-(\d{1,3})$/)?.[1];
+      if (!suffix) return null;
+      // "airpods-pro-2" is fine when the name says "AirPods Pro 2". Slugs drop decimal
+      // points, so 6.7" becomes "-67": strip them from the name before comparing.
+      const nameDigits = name(p).replace(/(\d)[.,](?=\d)/g, "$1");
+      if (new RegExp(`(^|[^0-9])${suffix}([^0-9]|$)`).test(nameDigits)) return null;
+      return { message: `URL ends in “-${suffix}”, which does not appear in the product name.`, evidence: p.slug };
     },
   },
   {

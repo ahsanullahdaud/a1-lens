@@ -127,6 +127,27 @@ describe("auditProduct", () => {
     expect(ids).toEqual(expect.arrayContaining(["description-short", "specs-thin"]));
   });
 
+  it("flags names that were cut off or damaged by an import", () => {
+    // Shapes seen in the real catalogue; each is a distinct symptom.
+    for (const name of ["Acme Power Adapter PD 65W -", "Acme MCP31CBI BK E+U, Printer,", "Acme QSFP28 transceiver that", "European 65W AC Adapter with", "Acme Plug (DELL-K9VXV-C", "Acme FPMA-DCB100 ,Dual"]) {
+      expect(ruleIds({ jsonLd: { ...baseJsonLd, name } }), name).toContain("name-truncated");
+    }
+    for (const name of ["Microsoft Xbox Series X", "Acme Soundbar 300 (Black)", "Acme Cable, 2 m, Black"]) {
+      expect(ruleIds({ jsonLd: { ...baseJsonLd, name } }), name).not.toContain("name-truncated");
+    }
+  });
+
+  it("flags a dedupe counter on the slug, but not a number that is part of the name", () => {
+    const at = (slug: string) => `https://a1techdeals.com/product/${slug}`;
+    expect(ruleIds({}, at("acme-soundbar-300-2"))).toContain("slug-dedupe-suffix");
+    expect(ruleIds({ jsonLd: { ...baseJsonLd, name: "UltraFlex Patch Cable CAT6" } }, at("ultraflex-patch-cable-cat6-25"))).toContain("slug-dedupe-suffix");
+    expect(ruleIds({ jsonLd: { ...baseJsonLd, name: "Acme AirPods Pro 2" } }, at("acme-airpods-pro-2"))).not.toContain("slug-dedupe-suffix");
+    expect(ruleIds({ jsonLd: { ...baseJsonLd, name: "Acme Galaxy S25 Ultra" } }, at("acme-galaxy-s25-ultra-25"))).not.toContain("slug-dedupe-suffix");
+    // A decimal in the name loses its point in the slug: 6.7" -> "-67".
+    expect(ruleIds({ jsonLd: { ...baseJsonLd, name: 'Galaxy A36 5G 17 cm (6.7")' } }, at("galaxy-a36-5g-17-cm-67"))).not.toContain("slug-dedupe-suffix");
+    expect(ruleIds({}, at("acme-soundbar-300"))).not.toContain("slug-dedupe-suffix");
+  });
+
   it("flags SEO template problems", () => {
     const ids = ruleIds({ metaDescription: "z".repeat(900), canonical: "https://a1techdeals.com/product/other", extraH1: true });
     expect(ids).toEqual(expect.arrayContaining(["meta-description-long", "canonical-mismatch", "h1-count"]));
