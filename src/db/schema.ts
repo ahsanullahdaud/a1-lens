@@ -101,9 +101,27 @@ export const competitorListings = pgTable(
       .references(() => products.id, { onDelete: "cascade" }),
     retailer: text("retailer").notNull(),
     url: text("url").notNull(),
+    /** exact = same colour/capacity/bundle; near = same model, some attribute differs; uncertain = can't tell. */
+    match: text("match").notNull().default("exact"),
+    matchNote: text("match_note"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [uniqueIndex("competitor_listings_unique_idx").on(t.productId, t.url)],
+);
+
+/** Raw page content fetched through a third-party extraction service, kept so parses can be re-run for free. */
+export const pageCaptures = pgTable(
+  "page_captures",
+  {
+    id: serial("id").primaryKey(),
+    url: text("url").notNull(),
+    source: text("source").notNull(), // parallel
+    fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull(),
+    title: text("title"),
+    markdown: text("markdown"),
+    meta: jsonb("meta").$type<Record<string, unknown>>(),
+  },
+  (t) => [index("page_captures_url_idx").on(t.url, t.fetchedAt)],
 );
 
 /** Phase 2 output: every price check we ever made, including the failed ones. */
@@ -122,11 +140,15 @@ export const competitorPrices = pgTable(
     price: numeric("price", { precision: 10, scale: 2, mode: "number" }),
     itemPrice: numeric("item_price", { precision: 10, scale: 2, mode: "number" }),
     shippingCost: numeric("shipping_cost", { precision: 10, scale: 2, mode: "number" }),
+    wasPrice: numeric("was_price", { precision: 10, scale: 2, mode: "number" }),
     currency: text("currency"),
     condition: text("condition"),
     availability: text("availability"),
     seller: text("seller"),
     sellerType: text("seller_type"), // business | individual | retailer
+    match: text("match"), // exact | near | uncertain
+    matchNote: text("match_note"),
+    captureId: integer("capture_id").references(() => pageCaptures.id, { onDelete: "set null" }),
     status: text("status").notNull(), // ok | no_price | blocked | disallowed | not_found | error
     note: text("note"),
     capturedAt: timestamp("captured_at", { withTimezone: true }).notNull().defaultNow(),

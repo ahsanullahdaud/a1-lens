@@ -27,14 +27,18 @@ const { values: args } = parseArgs({
   },
 });
 
-/** CSV columns: a1_product (URL, SKU or GTIN), retailer, url. Lines starting with # are ignored. */
-async function importCsv() {
+const MATCH_VALUES = new Set(["exact", "near", "uncertain"]);
+
+/** CSV columns: a1_product (URL, SKU or GTIN), retailer, url, match, note. Lines starting with # are ignored. */
+export async function importCsv() {
   const lines = readFileSync(CSV_PATH, "utf8").split(/\r?\n/).map((l) => l.trim());
   let added = 0;
   for (const line of lines) {
     if (!line || line.startsWith("#") || line.toLowerCase().startsWith("a1_product")) continue;
-    const [key, retailer, url] = line.split(",").map((c) => c.trim());
-    if (!key || !retailer || !url) {
+    const [key, retailer, url, matchRaw, ...noteParts] = line.split(",").map((c) => c.trim());
+    const match = matchRaw || "exact";
+    const matchNote = noteParts.join(",") || null;
+    if (!key || !retailer || !url || !MATCH_VALUES.has(match)) {
       console.warn(`skipped malformed line: ${line}`);
       continue;
     }
@@ -47,14 +51,17 @@ async function importCsv() {
       console.warn(`no crawled A1 product matches "${key}" — crawl it first`);
       continue;
     }
-    const inserted = await db
+    const [row] = await db
       .insert(schema.competitorListings)
-      .values({ productId: product.id, retailer, url })
-      .onConflictDoNothing()
-      .returning();
-    added += inserted.length;
+      .values({ productId: product.id, retailer, url, match, matchNote })
+      .onConflictDoUpdate({
+        target: [schema.competitorListings.productId, schema.competitorListings.url],
+        set: { retailer, match, matchNote },
+      })
+      .returning({ createdAt: schema.competitorListings.createdAt });
+    if (row && Date.now() - row.createdAt.getTime() < 5_000) added++;
   }
-  console.log(`Imported ${added} new competitor URL(s).`);
+  console.log(`Imported ${added} new competitor URL(s); existing rows refreshed with their match flag.`);
 }
 
 const gbp = (n: number | null | undefined) => (n == null ? "—" : `£${n.toFixed(2)}`);

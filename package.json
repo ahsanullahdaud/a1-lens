@@ -18,15 +18,18 @@
     "audit": "tsx scripts/audit.ts",
     "prices": "tsx scripts/prices.ts",
     "prices:import": "tsx scripts/prices.ts --import",
-    "probe": "tsx scripts/probe.ts"
+    "probe": "tsx scripts/probe.ts",
+    "extract": "tsx scripts/extract.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
     "cheerio": "^1.2.0",
     "drizzle-orm": "^0.45.3",
     "next": "16.3.5",
     "postgres": "^3.4.9",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

@@ -51,6 +51,19 @@ describe("EbaySource", () => {
     expect(o.note).toContain("individual seller cheaper at £65.00");
   });
 
+  it("prefers an exact-variant listing over a cheaper near-match and records the match", async () => {
+    mockEbay([item({ price: 60, title: "JBL Flip 7 Portable Bluetooth Speaker - Black" }), item({ price: 72, title: "JBL Flip 7 Portable Bluetooth Speaker - White" })]);
+    const [o] = await new EbaySource().lookup(product);
+    expect(o).toMatchObject({ status: "ok", price: 72, match: "exact" });
+    expect(o.note).toContain("a near match is cheaper at £60.00 (colour: listing says black, A1 says white)");
+  });
+
+  it("records a near-match as such when nothing exact is listed", async () => {
+    mockEbay([item({ price: 60, title: "JBL Flip 7 Portable Bluetooth Speaker - Black" })]);
+    const [o] = await new EbaySource().lookup(product);
+    expect(o).toMatchObject({ status: "ok", price: 60, match: "near", matchNote: "colour: listing says black, A1 says white" });
+  });
+
   it("falls back to an individual seller when no business seller is listed", async () => {
     mockEbay([item({ price: 65, type: "INDIVIDUAL" })]);
     const [o] = await new EbaySource().lookup(product);

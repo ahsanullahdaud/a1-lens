@@ -4,6 +4,12 @@ import {
   ACCESSORY,
   BOX_CONTENTS_STATED,
   CONDITION_WORDS,
+  CONNECTIVITY_HINT,
+  CONNECTIVITY_IN_NAME,
+  CONNECTIVITY_SPEC_LABEL,
+  CONNECTIVITY_SPEC_VALUE,
+  DUAL_CONNECTIVITY_WATCH,
+  WATCH_ACCESSORY,
   MAINS_POWERED,
   NAME_DANGLING_END,
   NAME_MALFORMED,
@@ -295,6 +301,27 @@ export const RULES: Rule[] = [
     },
   },
 
+  {
+    id: "watch-connectivity-unstated",
+    title: "Smartwatch listing doesn't say Bluetooth or LTE",
+    severity: "medium",
+    category: "content",
+    why: "Galaxy, Apple and Pixel watches ship as a Bluetooth/Wi-Fi model and an LTE model that share a name and differ by £50–£100. Without the variant a shopper can't tell which one they're buying — and neither can a price comparison; this is exactly what made the Galaxy Watch8 comparison uncertain.",
+    fix: "Put the connectivity variant (Bluetooth or LTE) in the name and in a spec row.",
+    check(p) {
+      const n = name(p);
+      if (!DUAL_CONNECTIVITY_WATCH.test(n) || WATCH_ACCESSORY.test(n)) return null;
+      if (CONNECTIVITY_IN_NAME.test(n)) return null;
+      if (p.specs.some((s) => CONNECTIVITY_SPEC_LABEL.test(s.label) && CONNECTIVITY_SPEC_VALUE.test(s.value))) return null;
+      const hint = p.specs.find((s) => CONNECTIVITY_HINT.test(s.value));
+      return {
+        message: hint
+          ? `Neither the name nor a variant spec row says Bluetooth or LTE; the only hint is buried in “${hint.label}”.`
+          : "Neither the name nor the specs say whether this is the Bluetooth/Wi-Fi or the LTE model.",
+        evidence: hint ? `${hint.label}: ${hint.value}` : n,
+      };
+    },
+  },
   {
     id: "name-truncated",
     title: "Product name looks cut off or malformed",

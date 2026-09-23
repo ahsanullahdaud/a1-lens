@@ -35,5 +35,17 @@ export const NAME_DANGLING_END = /([,&–—-]|\b(that|with|and|for|of|the|to|in
 /** A space before a comma, or an opening bracket that never closes, is feed damage rather than a style choice. */
 export const NAME_MALFORMED = /\s,|\([^)]*$/;
 
+/** Watch lines sold as both a Bluetooth/Wi-Fi and an LTE model at different prices. (Ultras are LTE-only, so they are left out.) */
+export const DUAL_CONNECTIVITY_WATCH = /\b(galaxy watch ?(\d|fe)|apple watch (series|se)|pixel watch)\b/i;
+export const WATCH_ACCESSORY = /\b(bands?|straps?|case|protector|charger|stand|dock)\b/i;
+
+/** The variant is "stated" only where a shopper looks: the name, or a spec row about the variant itself. */
+export const CONNECTIVITY_IN_NAME = /\b(LTE|4G|5G|cellular|bluetooth|BT|wi-?fi|GPS)\b/i;
+/** A row like "Cellular: No", "Network: LTE" or "Model: SM-L305 (LTE)" — not the generic feature list "Connectivity: Bluetooth, WiFi, NFC". */
+export const CONNECTIVITY_SPEC_LABEL = /cellular|lte|4g|5g|\bsim\b|network|variant|version|model/i;
+export const CONNECTIVITY_SPEC_VALUE = /(LTE|4G|5G|cellular|bluetooth|\bBT\b|wi-?fi|^(yes|no)$)/i;
+/** An incidental mention elsewhere (box contents, description) — not enough, but worth pointing at. */
+export const CONNECTIVITY_HINT = /\b(BT|LTE|4G|cellular)\b/;
+
 /** Grade words that may appear in a URL slug, most specific first. */
 export const CONDITION_WORDS = ["pristine", "excellent", "very-good", "good", "fair", "grade-a", "grade-b", "grade-c"];

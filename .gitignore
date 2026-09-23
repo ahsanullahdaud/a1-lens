@@ -42,3 +42,6 @@ next-env.d.ts
 
 # keep the env template in git
 !.env.example
+
+# raw competitor pages and LLM parses fetched through paid APIs (copyrighted content, never commit)
+/data/cache/

@@ -1,7 +1,28 @@
 # Hand-matched competitor pages for A1 products (Phase 2).
-# a1_product can be the A1 product URL, its SKU (A1T-...) or its GTIN/EAN.
-# Make sure it is the SAME product: same model, storage, colour and condition.
+# a1_product: the A1 product URL, SKU (A1T-...) or GTIN/EAN.
+# match: exact = same colour/capacity/bundle · near = same model, an attribute differs · uncertain = can't tell.
+# note: free text, no commas.
 #
-# a1_product,retailer,url
-A1T-GCVECHNFSU,Smart Home Sounds,https://www.smarthomesounds.co.uk/jbl-flip-7
-A1T-GCVECHNFSU,Wonderprice,https://www.wonderprice.co.uk/jbl-flip-7-portable-bluetooth-speaker-white
+# a1_product,retailer,url,match,note
+A1T-GCVECHNFSU,Smart Home Sounds,https://www.smarthomesounds.co.uk/jbl-flip-7,uncertain,colour not confirmed on the page
+A1T-GCVECHNFSU,Wonderprice,https://www.wonderprice.co.uk/jbl-flip-7-portable-bluetooth-speaker-white,exact,
+A1T-MDC4PLU3X2,Currys,https://www.currys.co.uk/products/sony-wh1000xm6-wireless-bluetooth-noisecancelling-headphones-midnight-blue-10282436.html,exact,
+A1T-MDC4PLU3X2,Argos,https://www.argos.co.uk/product/7650336,exact,
+A1T-AJHJUB3VBR,Currys,https://www.currys.co.uk/products/apple-airpods-pro-3-white-10291174.html,exact,
+A1T-AJHJUB3VBR,Argos,https://www.argos.co.uk/product/7797134,exact,
+A1T-GCVECHNFSU,Currys,https://www.currys.co.uk/products/jbl-flip-7-portable-bluetooth-speaker-black-10278564.html,near,colour: black (A1 white; Currys lists no white)
+A1T-GCVECHNFSU,Argos,https://www.argos.co.uk/product/7463640,near,colour: black (A1 white; Argos lists black and blue only)
+A1T-9GLTYORIHQ,Currys,https://www.currys.co.uk/products/samsung-galaxy-s25-ultra-256-gb-titanium-white-silver-10275807.html,near,colour: titanium white silver (A1 titanium black); URL now redirects to the SIM-free phones category so the product looks delisted
+A1T-9GLTYORIHQ,Argos,https://www.argos.co.uk/product/4668101,exact,catalogue 466/8101 Black; URL derived from Argos's own support catalogue number
+A1T-BSSIDXDURU,Currys,https://www.currys.co.uk/products/samsung-galaxy-watch8-bt-with-bixby-silver-40-mm-10286743.html,uncertain,BT model assumed; A1 listing does not state BT vs LTE
+A1T-BSSIDXDURU,Argos,https://www.argos.co.uk/product/7700217,uncertain,A1 listing does not state BT vs LTE
+A1T-Z8I15JFPUU,Currys,https://www.currys.co.uk/products/garmin-forerunner-265-sports-watch-powder-grey-46-mm-10301223.html,near,colour: powder grey (A1 black; Currys lists no black 46mm)
+A1T-Z8I15JFPUU,Argos,https://www.argos.co.uk/product/8093813,exact,Black/Grey is Garmin's name for the black 46mm
+A1T-ZPSA47DW64,Currys,https://www.currys.co.uk/products/playstation-ps5-dualsense-wireless-controller-midnight-black-10224962.html,exact,
+A1T-ZPSA47DW64,Argos,https://www.argos.co.uk/product/9418064,exact,
+A1T-79YKSKTFEK,Currys,https://www.currys.co.uk/products/sony-playstation-5-pro-10272138.html,exact,plain console; A1 listing verified not a bundle
+A1T-79YKSKTFEK,Argos,https://www.argos.co.uk/product/7797426,exact,
+A1T-YGEP46QBE3,Currys,https://www.currys.co.uk/products/dji-osmo-pocket-3-creator-combo-4k-ultra-hd-action-camera-black-10257677.html,exact,
+A1T-YGEP46QBE3,Argos,https://www.argos.co.uk/product/3424559,exact,
+A1T-YS6R9VA93M,Currys,https://www.currys.co.uk/products/instax-mini-12-instant-camera-pastel-blue-10247762.html,exact,
+A1T-YS6R9VA93M,Argos,https://www.argos.co.uk/product/2072847,exact,Argos calls it Blue; Fujifilm's only blue is Pastel Blue

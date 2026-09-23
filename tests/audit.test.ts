@@ -127,6 +127,20 @@ describe("auditProduct", () => {
     expect(ids).toEqual(expect.arrayContaining(["description-short", "specs-thin"]));
   });
 
+  it("flags a dual-connectivity watch that doesn't say Bluetooth or LTE", () => {
+    // Feature rows every watch has ("Bluetooth 5.3", "Wi-Fi") do not say which variant this is.
+    const featureSpecs: [string, string][] = [["Brand", "Samsung"], ["Connectivity", "Bluetooth 5.3, Wi-Fi, NFC"], ["Case", "40mm"], ["Plug Type", "UK"], ["In the box", "Watch, strap"]];
+    const watch = (name: string, specs: [string, string][] = featureSpecs) => ruleIds({ jsonLd: { ...baseJsonLd, name }, specs });
+    expect(watch("Samsung Galaxy Watch8 Smartwatch 40mm Silver")).toContain("watch-connectivity-unstated");
+    expect(watch("Samsung Galaxy Watch8 LTE 40mm Silver")).not.toContain("watch-connectivity-unstated");
+    expect(watch("Samsung Galaxy Watch8 Bluetooth 40mm Silver")).not.toContain("watch-connectivity-unstated");
+    expect(watch("Samsung Galaxy Watch8 40mm Silver", [...featureSpecs, ["Cellular", "No"]])).not.toContain("watch-connectivity-unstated");
+    expect(watch("Samsung Galaxy Watch8 40mm Silver", [...featureSpecs, ["Model", "SM-L305 (LTE)"]])).not.toContain("watch-connectivity-unstated");
+    // Accessories and single-variant lines are left alone.
+    expect(watch("Samsung Galaxy Watch8 Sport Band Silver")).not.toContain("watch-connectivity-unstated");
+    expect(watch("Garmin Forerunner 265 46mm Black")).not.toContain("watch-connectivity-unstated");
+  });
+
   it("flags names that were cut off or damaged by an import", () => {
     // Shapes seen in the real catalogue; each is a distinct symptom.
     for (const name of ["Acme Power Adapter PD 65W -", "Acme MCP31CBI BK E+U, Printer,", "Acme QSFP28 transceiver that", "European 65W AC Adapter with", "Acme Plug (DELL-K9VXV-C", "Acme FPMA-DCB100 ,Dual"]) {
