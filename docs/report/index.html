@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A1 Lens — overview</title>
+<style>
+  @page { size: A4; margin: 0; }
+  :root {
+    --ink: #0b0b0b; --ink-2: #52514e; --muted: #898781; --hair: #e1e0d9; --axis: #c3c2b7;
+    --surface: #fcfcfb; --subtle: #f3f3f0; --accent: #2a78d6; --accent-soft: #cde2fb; --neg: #d03b3b; --good: #006300;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #fff; color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 10.5pt; line-height: 1.45; }
+  .page { width: 210mm; height: 297mm; padding: 16mm 18mm 14mm; position: relative; overflow: hidden; page-break-after: always; background: #fff; }
+  .page:last-child { page-break-after: auto; }
+  .foot { position: absolute; left: 18mm; right: 18mm; bottom: 9mm; display: flex; justify-content: space-between; font-size: 8pt; color: var(--muted); border-top: 1px solid var(--hair); padding-top: 4px; }
+  h1 { font-size: 26pt; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h2 { font-size: 17pt; margin: 0 0 3px; letter-spacing: -0.01em; }
+  h3 { font-size: 11.5pt; margin: 14px 0 6px; }
+  p { margin: 0 0 8px; }
+  .kicker { font-size: 8.5pt; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 600; margin-bottom: 6px; }
+  .lede { color: var(--ink-2); font-size: 10.5pt; max-width: 150mm; }
+  .muted { color: var(--muted); } .ink2 { color: var(--ink-2); } .small { font-size: 8.5pt; } .num { font-variant-numeric: tabular-nums; }
+  .neg { color: var(--neg); font-weight: 600; } .good { color: var(--good); }
+  .grid { display: grid; gap: 8px; } .g2 { grid-template-columns: 1fr 1fr; } .g3 { grid-template-columns: 1fr 1fr 1fr; } .g5 { grid-template-columns: repeat(5, 1fr); }
+  .tile { border: 1px solid var(--hair); border-radius: 8px; padding: 9px 11px; background: var(--surface); }
+  .tile .v { font-size: 20pt; font-weight: 600; line-height: 1.1; margin: 2px 0; } .tile .l { font-size: 8.5pt; color: var(--ink-2); } .tile .h { font-size: 8pt; color: var(--muted); }
+  table { border-collapse: collapse; width: 100%; font-size: 9pt; }
+  th { text-align: left; font-weight: 600; color: var(--muted); font-size: 8pt; padding: 3px 6px 4px 0; border-bottom: 1px solid var(--hair); }
+  td { padding: 4px 6px 4px 0; border-bottom: 1px solid var(--hair); vertical-align: top; }
+  td.r, th.r { text-align: right; white-space: nowrap; }
+  .frame { border: 1px solid var(--hair); border-radius: 8px; overflow: hidden; background: var(--surface); }
+  .frame img { display: block; width: 100%; height: auto; }
+  .shot { position: relative; }
+  .cap { font-size: 8pt; color: var(--muted); margin-top: 4px; }
+  .bar { position: relative; height: 8px; background: var(--subtle); border-radius: 0 4px 4px 0; overflow: hidden; }
+  .bar > i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--accent); border-radius: 0 4px 4px 0; }
+  .div { position: relative; height: 10px; }
+  .div::before { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; width: 1px; background: var(--axis); }
+  .div > i { position: absolute; top: 0; bottom: 0; }
+  .div > i.l { right: 50%; background: var(--accent); border-radius: 4px 0 0 4px; }
+  .div > i.r { left: 50%; background: var(--neg); border-radius: 0 4px 4px 0; }
+  .badge { display: inline-block; font-size: 7.5pt; padding: 1px 5px; border-radius: 3px; background: var(--subtle); color: var(--ink); font-weight: 600; }
+  .badge.near { background: #fbe1d5; } .badge.unc { background: #fdedc4; }
+  .stack { display: flex; height: 14px; border-radius: 4px; overflow: hidden; gap: 2px; background: #fff; }
+  .stack > i { display: block; height: 100%; }
+  .legend { display: flex; gap: 14px; font-size: 8.5pt; color: var(--ink-2); margin-top: 6px; }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+  ul { margin: 4px 0 8px; padding-left: 16px; } li { margin-bottom: 3px; }
+  .flow { display: flex; align-items: stretch; gap: 6px; margin: 8px 0 4px; }
+  .flow .box { flex: 1; border: 1px solid var(--hair); border-radius: 8px; padding: 7px 9px; background: var(--surface); font-size: 8.5pt; }
+  .flow .box b { display: block; font-size: 9.5pt; margin-bottom: 2px; }
+  .flow .arrow { align-self: center; color: var(--axis); font-size: 14pt; }
+  .callout { border-left: 3px solid var(--accent); background: var(--subtle); padding: 8px 12px; border-radius: 0 6px 6px 0; font-size: 9.5pt; margin: 8px 0; }
+  .cover { background: linear-gradient(160deg, #0f2f5c 0%, #1f5aa6 55%, #2a78d6 100%); color: #fff; }
+  .cover .kicker { color: #bcd6f7; } .cover .lede { color: #dbe8fb; }
+  .cover .tile { background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.22); color: #fff; }
+  .cover .tile .l, .cover .tile .h { color: #cfe0f8; }
+  .cover .foot { color: #bcd6f7; border-color: rgba(255,255,255,0.25); }
+  .two { display: grid; grid-template-columns: 1.15fr 1fr; gap: 14px; }
+</style>
+</head>
+<body>
+
+<!-- ───────────────────────── 1 · COVER ───────────────────────── -->
+<section class="page cover">
+  <div style="margin-top: 38mm;">
+    <div class="kicker">Personal learning project · September 2026</div>
+    <h1 style="font-size: 40pt; margin-bottom: 8px;">A1 Lens</h1>
+    <p class="lede" style="font-size: 14pt; line-height: 1.4; max-width: 140mm;">A listing-quality audit and competitor price lens for the public a1techdeals.com catalogue — built to learn the business before day one.</p>
+  </div>
+  <div class="grid g3" style="margin-top: 18mm;">
+    <div class="tile"><div class="l">Product pages audited</div><div class="v">1,000</div><div class="h">every page in the public sitemap, 27 rules each</div></div>
+    <div class="tile"><div class="l">Products price-checked</div><div class="v">10</div><div class="h">against Currys and Argos, exact-variant matched</div></div>
+    <div class="tile"><div class="l">Findings with a stated fix</div><div class="v">6,012</div><div class="h">grouped into template, content and pricing work</div></div>
+  </div>
+  <div style="position: absolute; left: 18mm; bottom: 22mm; font-size: 10pt; color: #dbe8fb;">
+    Prepared by <b style="color:#fff">Ahsanullah Daud</b><br>
+    Source and full write-up: github.com/ahsanullahdaud/a1-lens
+  </div>
+  <div class="foot"><span>A1 Lens</span><span>Reads only public pages, the way a polite crawler should · not affiliated with A1 Tech Deals</span></div>
+</section>
+
+<!-- ───────────────────────── 2 · SUMMARY ───────────────────────── -->
+<section class="page">
+  <div class="kicker">Summary</div>
+  <h2>What it is, and what it found</h2>
+  <p class="lede">I wanted to understand A1's catalogue and pricing model from the inside before I joined, so I built a tool that reads the public site the way Google and a shopper do, scores every listing, and compares prices with the high street. Everything below comes from that tool; nothing internal was used.</p>
+
+  <div class="flow">
+    <div class="box"><b>1 · Crawl</b>1,000 product pages from the public sitemap, one every 2 seconds, robots.txt respected.</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>2 · Parse</b>What a shopper sees (price, condition, specs, images) and what Google sees (JSON-LD, meta tags).</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>3 · Audit</b>27 rules, each with a <i>why it matters</i> and a <i>fix</i>. Score 0–100 per listing.</div>
+    <div class="arrow">→</div>
+    <div class="box"><b>4 · Price lens</b>Same product at other retailers, matched by EAN and variant, with the evidence for every price.</div>
+  </div>
+
+  <h3>Five things worth knowing</h3>
+  <div class="grid g5" style="margin-bottom: 10px;">
+    <div class="tile"><div class="l">One import, not 565 problems</div><div class="v">56%</div><div class="h">of listings share a distributor-feed signature: brand/EAN-only specs, one image, a one-line description</div></div>
+    <div class="tile"><div class="l">Curated catalogue is healthy</div><div class="v">82</div><div class="h">average score for the other 404 listings (72 overall)</div></div>
+    <div class="tile"><div class="l">A1 is cheapest on</div><div class="v">9 / 10</div><div class="h">products checked against Currys and Argos; median 17% cheaper</div></div>
+    <div class="tile"><div class="l">One price is off-market</div><div class="v neg">+£221</div><div class="h">PS5 Pro 2TB at £1,009.99 vs £789 at both high-street chains</div></div>
+    <div class="tile"><div class="l">Grades that leapfrog</div><div class="v">9</div><div class="h">listings where a worse condition costs more than a better one</div></div>
+  </div>
+
+  <div class="two">
+    <div>
+      <h3>How the catalogue splits</h3>
+      <div class="stack">
+        <i style="width:56.5%; background: var(--accent);"></i><i style="width:3.1%; background: #86b6ef;"></i><i style="width:40.4%; background: #d9d8d2;"></i>
+      </div>
+      <div class="legend"><span><i style="background: var(--accent)"></i>Thin feed import · 565 (avg 66)</span><span><i style="background:#86b6ef"></i>Images, no copy · 31 (avg 54)</span><span><i style="background:#d9d8d2"></i>Standard · 404 (avg 82)</span></div>
+      <p class="small ink2" style="margin-top: 8px;">The import is almost entirely Computing, Office and Home Appliances stock (Ubiquiti, Mercodan, HP, Lenovo, CoreParts…). 99% of it carries an EAN, which is the key that makes bulk enrichment possible.</p>
+      <h3>Average score by category</h3>
+      <table>
+        <tr><th>Category</th><th class="r">Listings</th><th class="r">Avg score</th><th class="r">Thin-feed</th></tr>
+        <tr><td>Gaming</td><td class="r num">17</td><td class="r num">83</td><td class="r num">1</td></tr>
+        <tr><td>Audio</td><td class="r num">46</td><td class="r num">83</td><td class="r num">6</td></tr>
+        <tr><td>Cameras &amp; Drones</td><td class="r num">24</td><td class="r num">82</td><td class="r num">1</td></tr>
+        <tr><td>Mobile &amp; Wearables</td><td class="r num">122</td><td class="r num">78</td><td class="r num">40</td></tr>
+        <tr><td>Computing</td><td class="r num">635</td><td class="r num">70</td><td class="r num">400</td></tr>
+        <tr><td>Office &amp; Business</td><td class="r num">70</td><td class="r num">69</td><td class="r num">55</td></tr>
+        <tr><td>Home Appliances</td><td class="r num">49</td><td class="r num">69</td><td class="r num">40</td></tr>
+        <tr><td>TVs &amp; Displays</td><td class="r num">27</td><td class="r num">66</td><td class="r num">22</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3>A1 vs the cheapest comparable retailer</h3>
+      <div class="small muted" style="margin-bottom: 4px;">Bar left = A1 cheaper · right = A1 dearer · capped at ±35%</div>
+      <table style="font-size: 8.5pt;">
+        <tr><th>Product</th><th style="width: 28mm;">Gap</th><th class="r">A1 vs best</th></tr>
+        <tr><td>PS5 Pro 2TB Digital</td><td><div class="div"><i class="r" style="width: 40%"></i></div></td><td class="r num neg">+28% (£221)</td></tr>
+        <tr><td>DualSense Midnight Black</td><td><div class="div"><i class="l" style="width: 13%"></i></div></td><td class="r num">−9% (£5.50)</td></tr>
+        <tr><td>Instax Mini 12</td><td><div class="div"><i class="l" style="width: 13%"></i></div></td><td class="r num">−9% (£6.50)</td></tr>
+        <tr><td>DJI Osmo Pocket 3 Creator</td><td><div class="div"><i class="l" style="width: 15%"></i></div></td><td class="r num">−11% (£42)</td></tr>
+        <tr><td>JBL Flip 7</td><td><div class="div"><i class="l" style="width: 24%"></i></div></td><td class="r num">−17% (£17)</td></tr>
+        <tr><td>AirPods Pro 3</td><td><div class="div"><i class="l" style="width: 26%"></i></div></td><td class="r num">−18% (£41)</td></tr>
+        <tr><td>Sony WH-1000XM6</td><td><div class="div"><i class="l" style="width: 30%"></i></div></td><td class="r num">−21% (£74)</td></tr>
+        <tr><td>Garmin Forerunner 265</td><td><div class="div"><i class="l" style="width: 33%"></i></div></td><td class="r num">−23% (£84)</td></tr>
+        <tr><td>Galaxy Watch8 40mm</td><td><div class="div"><i class="l" style="width: 36%"></i></div></td><td class="r num">−25% (£56)</td></tr>
+        <tr><td>Galaxy S25 Ultra 256GB</td><td><div class="div"><i class="l" style="width: 47%"></i></div></td><td class="r num">−33% (£329)</td></tr>
+      </table>
+      <p class="small ink2" style="margin-top: 6px;">Prices read from the retailers' own product pages on 23 Sept 2026, including delivery; details on page 5.</p>
+    </div>
+  </div>
+  <div class="foot"><span>A1 Lens · Summary</span><span>2</span></div>
+</section>
+
+<!-- ───────────────────────── 3 · FINDING 1 ───────────────────────── -->
+<section class="page">
+  <div class="kicker">Finding 1 · Catalogue</div>
+  <h2>Most of the catalogue is one un-enriched import</h2>
+  <p class="lede">565 listings look nothing like the rest of the site. They share a signature: a spec table containing only <i>Brand</i> and <i>EAN</i>, a description under 100 characters and a single image. That is what a distributor feed looks like when only its identifiers are mapped — which means the fix is one import job, not 565 pieces of content work.</p>
+
+  <div class="two">
+    <div class="shot">
+      <div class="frame"><img src="img/feed.png" alt="Feed quality page"></div>
+      <div class="cap">The Feed quality page in A1 Lens: size of the segment, what comes with it, where it sits, which brands.</div>
+    </div>
+    <div>
+      <h3 style="margin-top: 0;">What comes with the signature</h3>
+      <table>
+        <tr><th>Symptom</th><th class="r">Share of the 565</th></tr>
+        <tr><td>Brand missing from the product name</td><td class="r num">76%</td></tr>
+        <tr><td>URL ends in a dedupe counter (…-2, …-38)</td><td class="r num">46%</td></tr>
+        <tr><td>Name cut off mid-phrase (“Portable Spot Welder for”)</td><td class="r num">11%</td></tr>
+        <tr><td>Has an EAN — the key to enrichment</td><td class="r num">99%</td></tr>
+      </table>
+      <h3>Where it sits</h3>
+      <table>
+        <tr><th>Category</th><th class="r">Thin-feed / total</th></tr>
+        <tr><td>Computing</td><td class="r num">400 / 635</td></tr>
+        <tr><td>Office &amp; Business</td><td class="r num">55 / 70</td></tr>
+        <tr><td>Home Appliances</td><td class="r num">40 / 49</td></tr>
+        <tr><td>TVs &amp; Displays</td><td class="r num">22 / 27</td></tr>
+        <tr><td>Mobile &amp; Wearables</td><td class="r num">40 / 122</td></tr>
+      </table>
+      <div class="callout" style="margin-top: 12px;">
+        <b>Why it matters.</b> These pages can't rank, can't convert and generate “what's in the box?” questions. Because 99% carry an EAN, specs, images and copy can be pulled in bulk from a product-data service or the supplier's full feed, and the importer's name/URL mapping can be fixed once so the next batch doesn't repeat it.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>A1 Lens · Finding 1</span><span>3</span></div>
+</section>
+
+<!-- ───────────────────────── 4 · FINDING 2 ───────────────────────── -->
+<section class="page">
+  <div class="kicker">Finding 2 · Listing quality</div>
+  <h2>27 rules, and where the fixes are cheap</h2>
+  <p class="lede">A rule that hits nearly every listing is a template fix — one code change clears it everywhere. A rule that hits a handful is content or data work. The dashboard separates the two.</p>
+
+  <div class="two">
+    <div>
+      <h3 style="margin-top: 0;">Template fixes (one change each)</h3>
+      <table>
+        <tr><th>Rule</th><th class="r">Listings</th><th style="width: 24mm;"></th></tr>
+        <tr><td>Offer markup omits return policy / shipping details</td><td class="r num">968</td><td><div class="bar"><i style="width:97%"></i></div></td></tr>
+        <tr><td>Meta description is the whole product description (1,000+ chars)</td><td class="r num">378</td><td><div class="bar"><i style="width:38%"></i></div></td></tr>
+        <tr><td>Title tag too long for search results</td><td class="r num">323</td><td><div class="bar"><i style="width:32%"></i></div></td></tr>
+        <tr><td>Out-of-stock page drops its Offer markup entirely</td><td class="r num">32</td><td><div class="bar"><i style="width:3%"></i></div></td></tr>
+        <tr><td>JSON-LD advertises a cheaper variant than the page opens on</td><td class="r num">31</td><td><div class="bar"><i style="width:3%"></i></div></td></tr>
+      </table>
+      <h3>Content and data work</h3>
+      <table>
+        <tr><th>Rule</th><th class="r">Listings</th><th style="width: 24mm;"></th></tr>
+        <tr><td>Fewer than three product images</td><td class="r num">638</td><td><div class="bar"><i style="width:64%"></i></div></td></tr>
+        <tr><td>Description under 300 characters</td><td class="r num">625</td><td><div class="bar"><i style="width:63%"></i></div></td></tr>
+        <tr><td>Spec table has four rows or fewer</td><td class="r num">557</td><td><div class="bar"><i style="width:56%"></i></div></td></tr>
+        <tr><td>Mains-powered product, plug type not stated</td><td class="r num">111</td><td><div class="bar"><i style="width:11%"></i></div></td></tr>
+        <tr><td>No GTIN / EAN</td><td class="r num">72</td><td><div class="bar"><i style="width:7%"></i></div></td></tr>
+        <tr><td>Name cut off or malformed</td><td class="r num">64</td><td><div class="bar"><i style="width:6%"></i></div></td></tr>
+        <tr><td>Refurbished, accessories not stated</td><td class="r num">17</td><td><div class="bar"><i style="width:2%"></i></div></td></tr>
+      </table>
+      <p class="small ink2" style="margin-top: 6px;">The plug-type and accessories rules come straight from A1's own 1-star Trustpilot themes (“came with a European plug … not clear in the description”).</p>
+    </div>
+    <div>
+      <div class="shot">
+        <div class="frame"><img src="img/listing.png" alt="Listing detail page"></div>
+        <div class="cap">One listing in A1 Lens: every finding with its fix, the facts, and the condition variants with their prices.</div>
+      </div>
+      <h3>Pricing anomalies the rules surfaced</h3>
+      <ul class="small">
+        <li><b>Grades that leapfrog (9):</b> Open Box above Brand New on five Samsung flagships (S25 Ultra 512GB: £779.99 vs £711.99); Refurbished above New on the Galaxy Tab A11 and DJI Osmo Pocket 3; “Good” above “Excellent” on the iPhone 14. A side-effect of pricing each grade by its own winning supplier bid.</li>
+        <li><b>Search price ≠ landing price (31):</b> the structured data carries the cheapest grade's price while the page opens on a dearer one — a Merchant Center mismatch waiting to happen.</li>
+        <li><b>Variant not stated:</b> the Galaxy Watch8 and Watch7 never say Bluetooth or LTE in the name or specs; only a “BT” buried in <i>Box contents</i>.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot"><span>A1 Lens · Finding 2</span><span>4</span></div>
+</section>
+
+<!-- ───────────────────────── 5 · FINDING 3 ───────────────────────── -->
+<section class="page">
+  <div class="kicker">Finding 3 · Price lens</div>
+  <h2>A1 wins on price — with one exception</h2>
+  <p class="lede">Ten mainstream, Brand-New products with an EAN, compared with Currys and Argos on 23 September. Prices are the retailer's own page price including delivery; each one is stored with the exact snippet it was read from, the match quality, the source and the date.</p>
+
+  <div class="shot" style="margin-bottom: 10px;">
+    <div class="frame" style="max-height: 78mm;"><img src="img/prices.png" alt="Price lens page"></div>
+    <div class="cap">The Price lens: products where A1 is dearer sort first; every row names the retailers checked, shows the match badge with its note, and the source and fetch date. “both” = Currys and Argos at the same price.</div>
+  </div>
+
+  <div class="two" style="grid-template-columns: 1.25fr 1fr;">
+    <table style="font-size: 8.5pt;">
+      <tr><th>Product</th><th class="r">A1</th><th class="r">Best comparable</th><th>Match</th></tr>
+      <tr><td style="white-space:nowrap">PS5 Pro 2TB Digital</td><td class="r num">£1,009.99</td><td class="r num">£789.00 Currys</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">Galaxy S25 Ultra 256GB</td><td class="r num">£669.99</td><td class="r num">£999.00 Argos</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">Galaxy Watch8 40mm</td><td class="r num">£163.49</td><td class="r num">£219.00 both</td><td><span class="badge unc">uncertain</span> <span class="small">BT/LTE</span></td></tr>
+      <tr><td style="white-space:nowrap">Forerunner 265 46mm</td><td class="r num">£285.99</td><td class="r num">£369.99 Argos</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">Sony WH-1000XM6</td><td class="r num">£275.49</td><td class="r num">£349.00 Currys</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">AirPods Pro 3</td><td class="r num">£178.49</td><td class="r num">£219.00 both</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">JBL Flip 7 White</td><td class="r num">£81.99</td><td class="r num">£129.00 both</td><td><span class="badge near">near</span> <span class="small">black only</span></td></tr>
+      <tr><td style="white-space:nowrap">Osmo Pocket 3 Combo</td><td class="r num">£356.99</td><td class="r num">£399.00 both</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">DualSense controller</td><td class="r num">£54.49</td><td class="r num">£59.99 both</td><td><span class="badge">exact</span></td></tr>
+      <tr><td style="white-space:nowrap">Instax Mini 12</td><td class="r num">£63.49</td><td class="r num">£69.99 both</td><td><span class="badge">exact</span> <span class="small">EAN =</span></td></tr>
+    </table>
+    <div>
+      <h3 style="margin-top: 0;">How the comparison stays honest</h3>
+      <ul class="small">
+        <li><b>Exact variant or it doesn't count.</b> Colour, capacity and bundle are checked against A1's listing; a near-match (Currys' black Flip 7) is shown but never sets the gap.</li>
+        <li><b>Main product's own price only.</b> Accessories, care plans, “£14/month” finance and delivery surcharges are set aside and listed as ignored on every row.</li>
+        <li><b>Evidence on every row.</b> The verbatim snippet the price came from, the retailer's was-price, delivery, stock, source and fetch date.</li>
+        <li><b>Polite by design.</b> Currys and Argos refuse crawlers, so their pages came through the Parallel Extract API rather than by working around the block.</li>
+      </ul>
+      <div class="callout">
+        <b>The exception.</b> The PS5 Pro 2TB sits at £1,009.99 against £789 at both chains and Sony's £699.99 list price — a plain console, not a bundle. Whichever supplier offer is winning that SKU is £220 off the market. The DualSense “was £79” also exceeds any retailer's was-price (list £64.99) and is worth a look under reference-pricing rules.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>A1 Lens · Finding 3</span><span>5</span></div>
+</section>
+
+<!-- ───────────────────────── 6 · HOW + NEXT ───────────────────────── -->
+<section class="page">
+  <div class="kicker">How it's built · What next</div>
+  <h2>Built to be extended, and to behave</h2>
+
+  <div class="two">
+    <div>
+      <div class="shot">
+        <div class="frame"><img src="img/overview.png" alt="Overview page"></div>
+        <div class="cap">The Overview: segments, findings by rule, score distribution — filterable by segment.</div>
+      </div>
+      <h3>Stack</h3>
+      <p class="small ink2">Next.js 16 (App Router) · TypeScript · Postgres 17 with Drizzle ORM · cheerio · Vitest (59 tests on synthetic fixtures) · Parallel Extract API for retailers that block crawlers · eBay Browse API adapter ready for keys. Every rule carries a <i>why</i> and a <i>fix</i>; adding one is a single object and a test.</p>
+      <h3>Crawling etiquette</h3>
+      <ul class="small">
+        <li>Public pages only; robots.txt obeyed for every host, including Crawl-delay.</li>
+        <li>One request every 2 seconds per host, honest User-Agent with a contact address.</li>
+        <li>Stops at the first 401/403/429 — Currys and Argos both refused, and were left alone.</li>
+        <li>Parsed fields stored, not page copies; test fixtures are synthetic.</li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-top: 0;">What I'd like to do with the team</h3>
+      <table>
+        <tr><th style="width: 30mm;">Effort</th><th>Proposal</th></tr>
+        <tr><td>Days</td><td><b>Enrich the thin import by EAN</b> — 558 listings with a barcode can pick up specs, images and copy in bulk; fix the importer's name/URL mapping so the next batch is clean.</td></tr>
+        <tr><td>Hours</td><td><b>Three template fixes</b> — return policy and shipping in the Offer markup, a purpose-written meta description, keep the Offer on out-of-stock pages.</td></tr>
+        <tr><td>Hours</td><td><b>Grade price guard</b> — never let Open Box or a refurbished grade price above Brand New; drive the JSON-LD from the variant the page opens on.</td></tr>
+        <tr><td>Hours</td><td><b>Nightly crawl</b> — price history and “A1 stopped being cheapest” alerts fall out of it.</td></tr>
+        <tr><td>Days</td><td><b>Widen the price lens</b> — eBay by EAN (new and refurbished), more retailers through the same pipeline, a “was-price honesty” check against RRP.</td></tr>
+        <tr><td>—</td><td><b>Or plug into what exists</b> — if the team already has a price-intelligence tool or a product feed, A1 Lens becomes the analysis layer on top of it.</td></tr>
+      </table>
+      <div class="callout" style="margin-top: 12px;">
+        <b>A note on tone.</b> This was built from the outside, on public data, to learn — not to grade anyone's work. The most useful thing it says is that the biggest gaps are structural (one import, a few templates, one pricing rule), which is exactly the kind of thing a small engineering change can move.
+      </div>
+    </div>
+  </div>
+  <div class="foot"><span>A1 Lens · github.com/ahsanullahdaud/a1-lens</span><span>6</span></div>
+</section>
+
+</body>
+</html>
