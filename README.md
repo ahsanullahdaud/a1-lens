@@ -103,6 +103,16 @@ Large retailers often refuse automated requests. A1 Lens records those as `block
 it will not disguise itself as a browser, rotate IPs or otherwise work around a refusal. For those
 retailers, enter prices by hand or use an official feed/API.
 
+`npm run probe -- --file data/probe-<retailer>.txt` answers "can we crawl retailer X politely?"
+without storing anything: honest User-Agent, robots.txt respected, one request every 5 s, stop at
+the first 401/403/429.
+
+| Retailer | Tested | Result |
+|---|---|---|
+| Currys | 2026-09-23 | robots.txt allows `/products*` and serves the sitemap, but the first product page is **403** (Cloudflare bot rule). Use their affiliate datafeed instead. |
+| Argos | 2026-09-23 | **403 on robots.txt itself** (Akamai). No crawling possible; affiliate datafeed only. |
+| Wonderprice, Smart Home Sounds | 2026-09-21 | Pages served; Wonderprice has schema.org Offer markup, Smart Home Sounds does not. |
+
 ## Crawling etiquette
 
 - Obeys `robots.txt` (including `Crawl-delay`) for every host, A1 and competitors alike.
