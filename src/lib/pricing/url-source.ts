@@ -50,7 +50,9 @@ export class MappedUrlSource implements PriceSource {
       }
       const offer = readOfferFromHtml(res.html);
       observations.push(
-        offer ? { ...base, ...offer, status: "ok" } : { ...base, status: "no_price", note: "no schema.org Offer on the page" },
+        offer
+          ? { ...base, ...offer, itemPrice: offer.price, sellerType: "retailer", status: "ok" }
+          : { ...base, status: "no_price", note: "no schema.org Offer on the page" },
       );
     }
     return observations;

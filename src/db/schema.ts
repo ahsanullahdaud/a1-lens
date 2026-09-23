@@ -118,10 +118,15 @@ export const competitorPrices = pgTable(
     retailer: text("retailer").notNull(),
     url: text("url"),
     title: text("title"),
+    /** Landed price: item + postage to the UK — what a shopper actually compares. */
     price: numeric("price", { precision: 10, scale: 2, mode: "number" }),
+    itemPrice: numeric("item_price", { precision: 10, scale: 2, mode: "number" }),
+    shippingCost: numeric("shipping_cost", { precision: 10, scale: 2, mode: "number" }),
     currency: text("currency"),
     condition: text("condition"),
     availability: text("availability"),
+    seller: text("seller"),
+    sellerType: text("seller_type"), // business | individual | retailer
     status: text("status").notNull(), // ok | no_price | blocked | disallowed | not_found | error
     note: text("note"),
     capturedAt: timestamp("captured_at", { withTimezone: true }).notNull().defaultNow(),
