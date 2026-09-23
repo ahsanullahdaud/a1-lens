@@ -19,7 +19,8 @@
     "prices": "tsx scripts/prices.ts",
     "prices:import": "tsx scripts/prices.ts --import",
     "probe": "tsx scripts/probe.ts",
-    "extract": "tsx scripts/extract.ts"
+    "extract": "tsx scripts/extract.ts",
+    "prices:import-parsed": "tsx scripts/import-parsed.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",

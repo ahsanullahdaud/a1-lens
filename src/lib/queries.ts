@@ -288,51 +288,118 @@ export async function getFeedQuality() {
   };
 }
 
-/** Latest successful observation per (product, retailer), compared against A1's current price. */
+export type PriceObservationRow = {
+  id: number;
+  retailer: string;
+  url: string | null;
+  title: string | null;
+  price: number | null;
+  itemPrice: number | null;
+  shippingCost: number | null;
+  wasPrice: number | null;
+  availability: string | null;
+  match: string | null;
+  matchNote: string | null;
+  source: string;
+  status: string;
+  note: string | null;
+  capturedAt: Date;
+};
+
+export type PriceLensProduct = {
+  productId: number;
+  name: string | null;
+  slug: string;
+  a1Price: number | null;
+  a1WasPrice: number | null;
+  conditionLabel: string | null;
+  observations: PriceObservationRow[];
+  /** Distinct retailers we looked at, including ones that returned no price. */
+  retailersChecked: string[];
+  /** Cheapest exact/uncertain match with a price. Near-matches never set the headline. */
+  cheapest?: PriceObservationRow;
+  /** A1 minus the cheapest comparable: positive = A1 is dearer. */
+  gap?: number;
+  gapPct?: number;
+};
+
+/**
+ * Every product with at least one competitor check: the latest observation per
+ * URL, the cheapest comparable one, and A1's gap to it. Products where A1 is
+ * dearer come first.
+ */
 export async function getPriceLens() {
   await connection();
   const latest = await db
-    .selectDistinctOn([competitorPrices.productId, competitorPrices.retailer], {
+    .selectDistinctOn([competitorPrices.productId, competitorPrices.url], {
+      id: competitorPrices.id,
       productId: competitorPrices.productId,
       retailer: competitorPrices.retailer,
       url: competitorPrices.url,
+      title: competitorPrices.title,
       price: competitorPrices.price,
+      itemPrice: competitorPrices.itemPrice,
+      shippingCost: competitorPrices.shippingCost,
+      wasPrice: competitorPrices.wasPrice,
+      availability: competitorPrices.availability,
+      match: competitorPrices.match,
+      matchNote: competitorPrices.matchNote,
+      source: competitorPrices.source,
       status: competitorPrices.status,
+      note: competitorPrices.note,
       capturedAt: competitorPrices.capturedAt,
       name: products.name,
       slug: products.slug,
       a1Price: products.price,
+      a1WasPrice: products.wasPrice,
+      conditionLabel: products.conditionLabel,
     })
     .from(competitorPrices)
     .innerJoin(products, eq(products.id, competitorPrices.productId))
-    .orderBy(competitorPrices.productId, competitorPrices.retailer, desc(competitorPrices.capturedAt));
+    .orderBy(competitorPrices.productId, competitorPrices.url, desc(competitorPrices.capturedAt));
 
-  type Row = { productId: number; name: string | null; slug: string; a1Price: number; cheapest: { retailer: string; price: number; url: string | null }; gapPct: number };
-  const byProduct = new Map<number, Row>();
+  const byProduct = new Map<number, PriceLensProduct>();
   for (const o of latest) {
-    if (o.status !== "ok" || o.price == null || o.a1Price == null) continue;
-    const current = byProduct.get(o.productId);
-    if (current && current.cheapest.price <= o.price) continue;
-    byProduct.set(o.productId, {
-      productId: o.productId,
-      name: o.name,
-      slug: o.slug,
-      a1Price: o.a1Price,
-      cheapest: { retailer: o.retailer, price: o.price, url: o.url },
-      // Negative = A1 is cheaper than the best competitor. Positive = A1 is being undercut.
-      gapPct: ((o.a1Price - o.price) / o.price) * 100,
-    });
+    const entry =
+      byProduct.get(o.productId) ??
+      byProduct.set(o.productId, {
+        productId: o.productId,
+        name: o.name,
+        slug: o.slug,
+        a1Price: o.a1Price,
+        a1WasPrice: o.a1WasPrice,
+        conditionLabel: o.conditionLabel,
+        observations: [],
+        retailersChecked: [],
+      }).get(o.productId)!;
+    entry.observations.push(o);
   }
 
-  const rows = [...byProduct.values()].sort((a, b) => b.gapPct - a.gapPct);
-  const gaps = rows.map((r) => r.gapPct).sort((a, b) => a - b);
+  const rows = [...byProduct.values()].map((p) => {
+    p.observations.sort((a, b) => (a.price ?? Infinity) - (b.price ?? Infinity) || a.retailer.localeCompare(b.retailer));
+    p.retailersChecked = [...new Set(p.observations.map((o) => o.retailer))];
+    p.cheapest = p.observations.find((o) => o.status === "ok" && o.price != null && o.match !== "near");
+    if (p.cheapest && p.a1Price != null) {
+      p.gap = p.a1Price - p.cheapest.price!;
+      p.gapPct = (p.gap / p.cheapest.price!) * 100;
+    }
+    return p;
+  });
+
+  // Dearer first (largest overrun at the top), then the rest by how far ahead A1 is.
+  rows.sort((a, b) => (b.gapPct ?? -Infinity) - (a.gapPct ?? -Infinity));
+
+  const compared = rows.filter((r) => r.gapPct != null);
+  const gaps = compared.map((r) => r.gapPct!).sort((a, b) => a - b);
   const failed = latest.filter((o) => o.status !== "ok");
   return {
     rows,
-    compared: rows.length,
-    a1Cheapest: rows.filter((r) => r.gapPct <= 0).length,
+    compared: compared.length,
+    a1Cheapest: compared.filter((r) => r.gapPct! <= 0).length,
+    a1Dearer: compared.filter((r) => r.gapPct! > 0).length,
     medianGapPct: gaps.length ? gaps[Math.floor(gaps.length / 2)] : null,
     failedChecks: failed.length,
     blockedRetailers: [...new Set(failed.filter((o) => o.status === "blocked" || o.status === "disallowed").map((o) => o.retailer))],
+    lastFetched: latest.reduce<Date | null>((max, o) => (!max || o.capturedAt > max ? o.capturedAt : max), null),
   };
 }
